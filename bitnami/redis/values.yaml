@@ -93,8 +93,8 @@ auth:
   sentinel: true
   ## @param auth.password Redis(TM) password
   ## Defaults to a random 10-character alphanumeric string if not set
-  ##
-  password: ""
+  ## TODO: Hook up with a real password
+  password: "admin"
   ## @param auth.existingSecret The name of an existing secret with Redis(TM) credentials
   ## NOTE: When it's set, the previous `auth.password` parameter is ignored
   ##
@@ -108,12 +108,15 @@ auth:
   usePasswordFiles: false
 ## @skip commonConfiguration
 ## ref: https://redis.io/topics/config
-##
 commonConfiguration: |-
   # Enable AOF https://redis.io/topics/persistence#append-only-file
   appendonly yes
   # Disable RDB persistence, AOF persistence already enabled.
   save ""
+  # Disable memory limit in production for now
+  maxmemory 0
+  # TODO: ACL file hardcoded and leveraging existing mount for now...need to pass in from a mounted volume or secret
+  aclfile /opt/bitnami/redis/mounted-etc/users.acl
 ## @param existingConfigmap The name of an existing ConfigMap with your custom configuration for Redis(TM) nodes
 ##
 existingConfigmap:
@@ -436,7 +439,6 @@ replica:
   ##
   command: []
   ## @param replica.args Override default container args (useful when using custom images)
-  ##
   args: []
   ## @param replica.preExecCmds Additional commands to run prior to starting Redis(TM) replicas
   ##
@@ -718,7 +720,7 @@ sentinel:
   ## IMPORTANT: this will disable the master and replicas services and
   ## create a single Redis(TM) service exposing both the Redis and Sentinel ports
   ##
-  enabled: false
+  enabled: true
   ## Bitnami Redis(TM) Sentinel image version
   ## ref: https://hub.docker.com/r/bitnami/redis-sentinel/tags/
   ## @param sentinel.image.registry Redis(TM) Sentinel image registry
@@ -1030,7 +1032,7 @@ tls:
 metrics:
   ## @param metrics.enabled Start a sidecar prometheus exporter to expose Redis(TM) metrics
   ##
-  enabled: false
+  enabled: true
   ## Bitnami Redis(TM) Exporter image
   ## ref: https://hub.docker.com/r/bitnami/redis-exporter/tags/
   ## @param metrics.image.registry Redis(TM) Exporter image registry
@@ -1120,7 +1122,7 @@ metrics:
   sentinel:
     ## @param metrics.sentinel.enabled Start a sidecar prometheus exporter to expose Redis(TM) Sentinel metrics
     ##
-    enabled: false
+    enabled: true
     ## Bitnami Redis(TM) Sentinel Exporter image
     ## ref: https://hub.docker.com/r/bitnami/redis-sentinel-exporter/tags/
     ## @param metrics.sentinel.image.registry Redis(TM) Sentinel Exporter image registry

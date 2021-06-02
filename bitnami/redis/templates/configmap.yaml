@@ -12,6 +12,10 @@ metadata:
   annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
+  ## TODO: The users.acl file should be generated from a service list with passwords instead
+  users.acl: |-
+    user default on #8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918 ~* +@all
+    user webapp on #2c66f372a6c929fe685806cb8c3039123427268466673bc705c5089ac843883d ~webapp:* ~{webapp:* ~redisson_* +@all -@admin -@dangerous +info
   redis.conf: |-
     # User-supplied common configuration:
     {{- if .Values.commonConfiguration }}
